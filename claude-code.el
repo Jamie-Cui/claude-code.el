@@ -1263,7 +1263,12 @@ With double prefix ARG (\\[universal-argument] \\[universal-argument]), prompt f
       (setq-local vertical-scroll-bar nil)
 
       ;; Display buffer, setting window parameters
-      (let ((window (display-buffer buffer '((display-buffer-below-selected)))))
+      (let ((window (display-buffer buffer 
+                                    ;; HACK by jamie
+                                    ;; use full frame
+                                    '((display-buffer-full-frame))
+                                    ;; '((display-buffer-below-selected))
+                                    )))
         (when window
           ;; turn off fringes and margins in the Claude buffer
           (set-window-parameter window 'left-margin-width 0)
@@ -1633,13 +1638,19 @@ If the Claude buffer doesn't exist, create it."
     (if claude-code-buffer
         (if (get-buffer-window claude-code-buffer)
             (delete-window (get-buffer-window claude-code-buffer))
-          (let ((window (display-buffer claude-code-buffer '((display-buffer-below-selected)))))
+          (let ((window (display-buffer claude-code-buffer
+                                        ;; HACK by jamie
+                                        ;; use full frame
+                                        '((display-buffer-full-frame))
+                                        ;; '((display-buffer-below-selected))
+                                        )))
             ;; set no-delete-other-windows parameter for claude-code window
             (set-window-parameter window 'no-delete-other-windows claude-code-no-delete-other-windows)
             ;; Optionally select the window based on user preference
             (when claude-code-toggle-auto-select
               (select-window window))))
-      (claude-code--show-not-running-message))))
+      (claude-code--show-not-running-message))
+    (claude-code)))
 
 ;;;###autoload
 (defun claude-code--switch-to-all-instances-helper ()
